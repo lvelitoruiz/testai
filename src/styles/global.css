@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .select-custom {
+        background-image: url(./img/ico-select.svg);
+        background-size: 30px;
+        background-repeat: no-repeat;
+        background-position: right center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .input-component {
+        @apply border font-light border-[#8B8986] px-3 h-[52px] font-sans text-sm w-full focus:border-[#42B0CD] placeholder:text-[#9B8F86] text-[#2C261F] focus:outline-none;
+    }
+}
