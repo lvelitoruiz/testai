@@ -29,10 +29,6 @@ const Sidebar = ({onConversationChange,onConversationHistoryChange}: sidebarProp
         onConversationHistoryChange(value);
      }
 
-     useEffect( () => {
-        console.log(chatConversations);
-     },[chatConversations]);
-
     return (
         <div className="w-5/12 pr-5">
             <div className="flex flex-col h-full">

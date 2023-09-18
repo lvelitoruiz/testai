@@ -2,7 +2,7 @@ import { NavArrowLeft, CollageFrame, Settings } from "iconoir-react";
 import React from "react";
 import { HeaderProps } from "../types";
 
-const Header = ({ sidebar = true, onActivateSidebar }: HeaderProps) => {
+const Header = ({ sidebar = true, onActivateSidebar, onLaunchModal }: HeaderProps) => {
     return (
         <section className="bg-[#F97316] h-[90px] flex justify-between items-center px-10">
             <div className="flex items-center gap-4">
@@ -17,7 +17,7 @@ const Header = ({ sidebar = true, onActivateSidebar }: HeaderProps) => {
                     <CollageFrame className="text-sm w-5 h-5" />
                 </button>
             </div>
-            <button className="flex items-center justify-center border border-white w-[45px] h-[45px] rounded gap-1 text-white">
+            <button className="flex items-center justify-center border border-white w-[45px] h-[45px] rounded gap-1 text-white" onClick={onLaunchModal}>
                 <Settings className="text-sm" />
             </button>
         </section>

@@ -1,30 +1,31 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
-import ChatHeader from './ChatHeader'
-import ChatLayout from './ChatLayout'
-import ChatFooter from './ChatFooter'
-import { ChatImperativeHandles, Conversation, chatProps, messageProps } from '../types'
-import axios from 'axios'
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import ChatHeader from './ChatHeader';
+import ChatLayout from './ChatLayout';
+import ChatFooter from './ChatFooter';
+import { ChatImperativeHandles, Conversation, chatProps, messageProps } from '../types';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { addOrUpdateConversation } from '../slices/chatSlice'; 
+import { RootState } from '../store/store'
+
+
 
 const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
+    const dispatch = useDispatch();
+    const conversations = useSelector( (state: RootState) => state.chat); 
+
+    const maxToken = useSelector((state: RootState) => state.maxToken);
+
     const [input, setInput] = useState<string>("");
-    const [conversations, setConversations] = useState<Conversation[]>([]);
     const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [maxTokens, setMaxTokens] = useState(1000);
     const SYSTEM_MESSAGE = "You are a helpful assistant.";
-
-    useEffect(() => {
-        const savedConversations = localStorage.getItem('chat_conversations');
-        if (savedConversations) {
-            setConversations(JSON.parse(savedConversations));
-        }
-    }, []);
 
     useEffect(() => {
         if (input.length > 4) {
             handleAIQuery();
         }
-    }, [input])
+    }, [input]);
 
     const handleAIQuery = async () => {
         let trimmedInput = input;
@@ -33,7 +34,7 @@ const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
             type: 'user',
             message: input,
             name: 'Ana Clara',
-            time: new Date()
+            time: new Date().toISOString(),
         };
 
         let updatedConversation = currentConversation ?
@@ -41,20 +42,16 @@ const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
             : {
                 conversationId: Date.now(),
                 timestamp: new Date().toISOString(),
-                messages: [userMessage]
+                messages: [userMessage],
+                active: false,
             };
 
-        const updatedConversations = currentConversation ?
-            conversations.map(c => c.conversationId === currentConversation.conversationId ? updatedConversation : c)
-            : [...conversations, updatedConversation];
-
-        setConversations(updatedConversations);
+        dispatch(addOrUpdateConversation(updatedConversation));
         setCurrentConversation(updatedConversation);
-        localStorage.setItem('chat_conversations', JSON.stringify(updatedConversations));
 
         const combinedLength = SYSTEM_MESSAGE.length + input.length;
-        if (combinedLength > maxTokens) {
-            const amountToTrim = combinedLength - maxTokens;
+        if (combinedLength > maxToken) {
+            const amountToTrim = combinedLength - maxToken;
             trimmedInput = input.substring(0, input.length - amountToTrim);
         }
 
@@ -72,7 +69,7 @@ const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
                 'https://api.openai.com/v1/chat/completions', payload,
                 {
                     headers: {
-                        'Authorization': `Bearer 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`,
+                        'Authorization': `Bearer ${process.env.GATSBY_AI_APIKEY}`,
                         'Content-Type': 'application/json'
                     }
                 }
@@ -83,45 +80,40 @@ const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
                 type: 'ai',
                 message: response.data.choices[0].message.content,
                 name: 'OdamaChat',
-                time: new Date(),
+                time: new Date().toISOString(),
             };
 
-            setIsLoading(false);
-            updatedConversation.messages.push(aiMessage);
-            setConversations(prevConversations =>
-                prevConversations.map(c => c.conversationId === updatedConversation.conversationId ? updatedConversation : c)
-            );
+            updatedConversation = {
+                ...updatedConversation,
+                messages: [...updatedConversation.messages, aiMessage]
+            };
+            dispatch(addOrUpdateConversation(updatedConversation));
             setCurrentConversation(updatedConversation);
-            localStorage.setItem('chat_conversations', JSON.stringify(updatedConversations));
 
         } catch (error) {
-            setIsLoading(false);
             console.error("Error:", error);
+        } finally {
+            setIsLoading(false);
+            setInput('');
         }
-
-        setInput('');
     };
 
     useImperativeHandle(ref, () => ({
-
         triggerConversationChange: (id: string) => {
-            conversations.map((item) => {
-                if (parseInt(id) === item.conversationId) {
-                    setCurrentConversation(item);
-                }
-            })
+            const conversationToSet = conversations.find(item => item.conversationId === parseInt(id));
+            if (conversationToSet) {
+                setCurrentConversation(conversationToSet);
+            }
         },
-
         triggerConversationHistoryChange: (value: string) => {
             setCurrentConversation(null);
-            setInput(value)
+            setInput(value);
         }
     }));
 
     const generateNewConversation = () => {
         setCurrentConversation(null);
-    }
-
+    };
 
     return (
         <div className={`${!props.sidebar ? "w-12/12" : "w-7/12"} h-full border border-[#CCCCCC8C] rounded-[10px]`}>
@@ -129,7 +121,7 @@ const Chat = forwardRef<ChatImperativeHandles, chatProps>((props, ref) => {
             <ChatLayout conversation={currentConversation} loading={isLoading} />
             <ChatFooter onTypingPrompt={(event) => setInput(event)} />
         </div>
-    )
-})
+    );
+});
 
-export default Chat
+export default Chat;

@@ -1,24 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import HistoryItem from './HistoryItem'
+import React from 'react';
+import HistoryItem from './HistoryItem';
 import { sidebar } from '../utils/consts';
 import { historyItem, historyProperties } from '../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { setActiveConversation } from '../slices/chatSlice';
 
 
 
-const History = ({chatList,onHistoryChange}: historyProperties) => {
+const History = ({onHistoryChange}: historyProperties) => {
 
-    const [historyList, setHistoryList] = useState<historyItem[]>(JSON.parse(chatList));
+    const dispatch = useDispatch();
+
+    const historyList = useSelector((state: RootState) => state.chat);
 
     const handleActivateItem = (id: string) => {
-        let newStory = [...historyList];
-        newStory.map((item) => {
-            item.active = false;
-            if (item.conversationId === id) {
-                item.active = true;
-            }
-        })
-
-        setHistoryList(newStory.reverse());
+        // const newStory = historyList.map(item => ({
+        //   ...item,
+        //   active: item.conversationId === parseInt(id),
+        // }));
+        dispatch(setActiveConversation(id));
         onHistoryChange(id);
     }
 
@@ -27,17 +28,18 @@ const History = ({chatList,onHistoryChange}: historyProperties) => {
             <div className="h-[64px] flex items-center border-b border-[#CCCCCC8C] justify-between bg-white rounded-t-[10px] px-6">
                 <p className="font-semibold text-[#1E293B]">{sidebar.HISTORIAL.TITLE}</p>
             </div>
-            <div className="p-6 h-[calc(100vh-468px)] overflow-auto">
+            <div className="p-6 h-[calc(100vh-468px)] overflow-auto flex flex-col">
                 {
-                    historyList.length > 0 && historyList.reverse().map((item, index) => {
+                    historyList.length > 0 && historyList.map((item, index) => {
+                        console.log(item);
                         return (
-                            <HistoryItem key={index} activeItem={item.active} title={item.messages[0].message} time={item.timestamp} conversationId={item.conversationId} onActivateItem={(event) => handleActivateItem(event)} />
+                            <HistoryItem key={index} activeItem={item.active} title={item.messages[0].message} time={item.timestamp} conversationId={item.conversationId.toString()} onActivateItem={(event) => handleActivateItem(event)} />
                         )
                     })
                 }
             </div>
         </div>
-    )
+    );
 }
 
-export default History
+export default History;

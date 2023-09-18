@@ -29,18 +29,20 @@ export interface messageProps {
     type: 'user' | 'ai',
     name: string,
     message: string,
-    time: Date,
+    time: string,
 }
 
 export interface Conversation {
     conversationId: number;
     timestamp: string;
     messages: messageProps[];
+    active: boolean;
 };
 
 export interface HeaderProps {
     sidebar: boolean;
     onActivateSidebar: () => void;
+    onLaunchModal: () => void;
 }
 
 export interface historyMessage {
@@ -103,4 +105,8 @@ export interface chatHeaderProperties {
 
 export interface promptContainerProperties {
     onPromptChangingConversation: (value: string) => void,
+}
+
+export interface modalProperties {
+    onSetTokens: () => void
 }

@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import chatReducer from '../slices/chatSlice';
+import maxTokenReducer from '../slices/tokenSlice';
 
 const store = configureStore({
     reducer: {
-        chat: chatReducer
+        chat: chatReducer,
+        maxToken: maxTokenReducer
     }
 });
 
