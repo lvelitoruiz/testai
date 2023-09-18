@@ -1,14 +1,5 @@
 import React, { forwardRef, useEffect, useState } from "react";
-
-interface inputProps {
-    texto: string;
-    placeholder: string;
-    name: string;
-    type?: string;
-    customStyles?: React.CSSProperties;
-    extraStyles?: string;
-    onValueChange: (value: string) => void;
-}
+import { inputProps } from "../types";
 
 const Input = forwardRef(({texto,placeholder,name,type = "text",onValueChange,customStyles,extraStyles}: inputProps) => {
 

@@ -1,12 +1,12 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
-import Form from "../components/Form"
+import Dashboard from "../components/Dashboard"
 
 
 
 const IndexPage: React.FC<PageProps> = () => {
   return (
-    <Form />
+    <Dashboard />
   )
 }
 

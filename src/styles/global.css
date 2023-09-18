@@ -13,6 +13,22 @@
     }
 
     .input-component {
-        @apply border font-light border-[#8B8986] px-3 h-[52px] font-sans text-sm w-full focus:border-[#42B0CD] placeholder:text-[#9B8F86] text-[#2C261F] focus:outline-none;
+        @apply appearance-none;
+    }
+
+    .chat-box p {
+        @apply mb-2 text-gray-600;
+    }
+
+    .chat-box ol, .chat-box ul {
+        @apply mb-2 pl-4;
+    }
+
+    .chat-box ol {
+        @apply list-decimal
+    }
+
+    .chat-box ul {
+        @apply list-disc mb-4
     }
 }
