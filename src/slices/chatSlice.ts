@@ -15,10 +15,11 @@ const chatSlice = createSlice({
                 state.push(action.payload);
             }
         },
+        removeConversation: (state, action: PayloadAction<string>) => {
+            return state.filter(conv => conv.conversationId !== parseInt(action.payload));
+        },
         setActiveConversation: (state, action) => {
             return state.map(conv => {
-                console.log(conv.conversationId);
-                console.log(action.payload);
                 if (conv.conversationId === parseInt(action.payload)) {
                     return { ...conv, active: true };
                 }
@@ -28,8 +29,6 @@ const chatSlice = createSlice({
     }
 });
 
-export const { addOrUpdateConversation } = chatSlice.actions;
-
-export const { setActiveConversation } = chatSlice.actions;
+export const { addOrUpdateConversation, removeConversation, setActiveConversation } = chatSlice.actions;
 
 export default chatSlice.reducer;

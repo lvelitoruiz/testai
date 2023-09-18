@@ -89,7 +89,6 @@ export interface chatLayoutProperties {
 }
 
 export interface historyProperties {
-    chatList: string,
     onHistoryChange: (id: string) => void,
 }
 

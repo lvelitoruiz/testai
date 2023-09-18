@@ -2,8 +2,13 @@ import { Cancel, Check, Search, Timer, Trash } from 'iconoir-react'
 import React, { useState } from 'react'
 import { ItemProps } from '../types';
 import Hour from './Hour';
+import { useDispatch } from 'react-redux';
+import { removeConversation } from '../slices/chatSlice';
 
 const HistoryItem = ({ activeItem, title, time, onActivateItem, conversationId }: ItemProps) => {
+
+    const dispatch = useDispatch();
+    
     const [removeItem,setRemoveItem] = useState(false);
 
     const handleRemove = (event: React.MouseEvent) => {
@@ -14,6 +19,9 @@ const HistoryItem = ({ activeItem, title, time, onActivateItem, conversationId }
     const handleConfirm = (event: React.MouseEvent, value: boolean) => {
         event.stopPropagation();
         setRemoveItem(false);
+        if(value) {
+           handleRemoveConversation(conversationId) 
+        }
     }
 
     const truncateText = (input: string): string => {
@@ -25,6 +33,10 @@ const HistoryItem = ({ activeItem, title, time, onActivateItem, conversationId }
         
         return words.slice(0, 5).join(" ") + "..."; 
     }
+
+    const handleRemoveConversation = (conversationId: string) => {
+        dispatch(removeConversation(conversationId));
+    };
 
     return (
         <div className={`flex items-center justify-between cursor-pointer px-5 py-3 rounded mb-4 ${activeItem ? "bg-[#fff6ea]" : ""}`} onClick={() => onActivateItem(conversationId)}>

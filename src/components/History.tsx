@@ -1,7 +1,7 @@
 import React from 'react';
 import HistoryItem from './HistoryItem';
 import { sidebar } from '../utils/consts';
-import { historyItem, historyProperties } from '../types';
+import { historyProperties } from '../types';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { setActiveConversation } from '../slices/chatSlice';
@@ -15,13 +15,11 @@ const History = ({onHistoryChange}: historyProperties) => {
     const historyList = useSelector((state: RootState) => state.chat);
 
     const handleActivateItem = (id: string) => {
-        // const newStory = historyList.map(item => ({
-        //   ...item,
-        //   active: item.conversationId === parseInt(id),
-        // }));
         dispatch(setActiveConversation(id));
         onHistoryChange(id);
     }
+
+    
 
     return (
         <div className="border border-[#CCCCCC8C] bg-white rounded-[10px] shadow-[0_0_6px_0_rgba(46,58,90,0.09)] h-full">
@@ -31,7 +29,6 @@ const History = ({onHistoryChange}: historyProperties) => {
             <div className="p-6 h-[calc(100vh-468px)] overflow-auto flex flex-col">
                 {
                     historyList.length > 0 && historyList.map((item, index) => {
-                        console.log(item);
                         return (
                             <HistoryItem key={index} activeItem={item.active} title={item.messages[0].message} time={item.timestamp} conversationId={item.conversationId.toString()} onActivateItem={(event) => handleActivateItem(event)} />
                         )
